@@ -27,5 +27,5 @@ htmlcov/
 .vercel
 .env
 
-data/klines/
-data/dfs/
+data/klines/**/**.json
+data/dfs/**/**.csv
