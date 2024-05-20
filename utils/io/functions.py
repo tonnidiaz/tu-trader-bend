@@ -32,8 +32,6 @@ def on_backtest(body):
             klines = _bin.get_klines(symbol, interval=body.get('interval'), start=start, end=end, save_fp=fp)
         emit('backtest', 'Analizing data...')
         df = chandelier_exit(heikin_ashi(parse_klines(klines)))
-        df.to_csv('data/dfs/binance/df.csv')
-        print("Saved to CSV")
         bal = float(body.get('bal'))
 
         emit('backtest', 'Backtesting...')

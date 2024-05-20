@@ -33,8 +33,6 @@ def backtest_route():
             klines = _bin.get_klines(symbol, interval=body.get('interval'), start=start, end=end, save_fp=fp)
 
         df = chandelier_exit(heikin_ashi(parse_klines(klines)))
-        df.to_csv('data/dfs/binance/df.csv')
-        print("Saved to CSV")
         bal = float(body.get('bal'))
         lev = body.get('lev')
         lev = int(lev) if lev else 1
