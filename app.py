@@ -152,6 +152,7 @@ def check_n_place_orders():
 
     global cnt, last_check_at
     okx : OKX= OKX.inst
+    binance : Binance= Binance.inst
     now = datetime.now()
     curr_min = now.minute
     app = get_app()
@@ -177,7 +178,7 @@ def check_n_place_orders():
         orders = Order.find().run()
         is_closed, last_order = update_order(orders)
 
-        klines = okx.get_klines()
+        klines = binance.get_klines(symbol=f"{app.base}{app.ccy}")
         df = chandelier_exit(heikin_ashi(parse_klines(klines)))
 
 
