@@ -21,13 +21,15 @@ def update_order(orders: list[Order]):
         last_order = orders[-1]
         print(f"LAST_ORDER: {last_order}\n")
         is_closed = last_order.is_closed
-        oid = last_order.order_id if len(last_order.order_id)  else last_order.buy_order_id
+        is_sell_order = len(last_order.order_id) >0
+
+        oid = last_order.order_id if is_sell_order else last_order.buy_order_id
         res = okx.get_order_by_id(oid)
         
         _is_closed = res["state"] != "live"
 
-        if last_order.side == "sell":
-            print("Last order side is sell\n")
+        if is_sell_order:
+            print("IS SELL ORDER\n")
             
             if _is_closed:
                 
@@ -46,7 +48,7 @@ def update_order(orders: list[Order]):
             print('')
 
         else:
-            print("Last order side is buy\n")
+            print("IS BUY ORDER\n")
         
             if _is_closed:
                 last_order.buy_price = float(res["fillPx"])

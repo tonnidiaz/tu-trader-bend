@@ -141,7 +141,7 @@ def check_n_place_orders():
     now = datetime.now()
     curr_min = now.minute
     app = get_app()
-    m_test = test and len(Order.find().run()) <= 5
+    m_test = test and len(Order.find().run()) <= 2
     if test:
         print(f"CURR_MIN: [{curr_min}]\tTEST: {m_test}\n")
 
@@ -179,16 +179,18 @@ def check_n_place_orders():
                 row["buy_signal"] == 1 and (row["sma_20"] > row["sma_50"]) or m_test
             ):
 
-                print("HAS BUY SIGNAL > GOING IN")
+                print(f"HAS BUY SIGNAL > GOING IN: {last_order}")
                 entry_price = row["close"]
-                place_trade(ts=row["timestamp"], price=entry_price)
+                amt = last_order.ccy_amt * (1 +  last_order.ccy_amt * last_order.profit / 100) if last_order is not None else None
+                place_trade(ts=row["timestamp"], price=entry_price, amt=amt)
 
             elif not is_closed and last_order.side == 'sell' and last_order.order_id == '' and (
                 row["sell_signal"] == 1 and (row["sma_20"] < row["sma_50"]) or m_test
             ):
 
                 print("HAS SELL SIGNAL > GOING OUT")
-                place_trade(ts=row["timestamp"], price=row["close"], side="sell")
+                amt = last_order.base_amt
+                place_trade(ts=row["timestamp"], price=row["close"], side="sell", amt=amt)
         print("RESUME JOB")
         scheduler.resume_job(TIME_CHECKER_JOB_ID)
 

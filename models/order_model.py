@@ -17,4 +17,4 @@ class Order(Document):
     sell_fee: float = 0
 
     def __str__(self):
-        return str({'order_id': self.order_id, 'is_closed': self.is_closed, 'bought_at': self.buy_price, 'sold_at': self.sell_price})
+        return str({'order_id': self.order_id, 'is_closed': self.is_closed, 'side': self.side})
