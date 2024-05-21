@@ -31,7 +31,7 @@ class OKX:
         self.market_data_api = MarketData.MarketAPI(flag=self.flag)
 
         
-    def get_klines(self, end = round(datetime.now().timestamp() * 1000)):
+    def get_klines(self, end = None):
         """ Returns Reversed klines """
         klines = []
         print('GETTING OKX KLINES...')
