@@ -46,7 +46,7 @@ def ce_sma_backtest(df: pd.DataFrame, balance: float, lev = 1):
             m_data['data'][str(row['timestamp'])] = {'side': 'sell', 'close': round(row['close'], 2), 'balance': new_balance, 'profit': f"{profit}\t{profit_percent}%"}
 
     print(f"TOTAL TRADES: {cnt}")
-
+    cnt = cnt if cnt > 0 else 1
     gain = round(gain * 100 / cnt, 2)
     loss = round(loss * 100 / cnt, 2)
     m_data = {**m_data, 'balance': round(balance / lev, 2), 'trades': cnt, "gain": gain, 'loss': loss }
