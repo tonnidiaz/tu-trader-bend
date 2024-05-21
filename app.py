@@ -53,8 +53,8 @@ def test_connect(msg):
 
 
 @socketio.on('disconnect')
-def test_disconnect():
-    print('Client disconnected')
+def test_disconnect(msg):
+    print('Client disconnected: ', msg)
 
 @socketio.on('backtest')
 def _on_backtest(data):
