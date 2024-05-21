@@ -6,6 +6,7 @@ from bunnet import init_bunnet
 
 from models.app_model import App
 from models.order_model import Order
+from models.user_model import User
 
 load_dotenv(override=True)
 
@@ -16,7 +17,7 @@ class TuMongo:
         url = getenv("MONGO_URL_LOCAL") if environ["ENV"] == 'dev' else getenv("MONGO_URL")
         print(url)
         self.client = MongoClient(url)
-        init_bunnet(database=self.client[db], document_models=[App, Order])
+        init_bunnet(database=self.client[db], document_models=[App, Order, User])
         print("MONGO INITIALIZED")
 
 

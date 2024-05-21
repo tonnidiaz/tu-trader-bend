@@ -1,11 +1,13 @@
 from datetime import datetime
 import json
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request
 from classes.OKX import OKX
 from classes.binance import Binance
 from models.app_model import App
+from models.user_model import User
 from routes.backtest import router as backtest_bp
+from routes.auth import router as auth_bp
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
 from flask_socketio import SocketIO
@@ -50,6 +52,17 @@ socketio.init_app(app, cors_allowed_origins="*", logger=False, engineio_logger=F
 @socketio.on('connect')
 def test_connect(msg):
     print(f'Connected: {msg}')
+    if msg:
+        uname = msg.get('username')
+        user = User.find_one(User.username == uname).run()
+        if not user:
+            raise ConnectionRefusedError("Unauthorised")
+
+        print(request.sid)
+        user.io_id = request.sid
+        user.save()
+        print("USER IO ID UPDATED")
+        
 
 
 @socketio.on('disconnect')
@@ -65,6 +78,7 @@ scheduler = APScheduler()
 init()
 
 app.register_blueprint(backtest_bp)
+app.register_blueprint(auth_bp)
 
 cnt = 0
 
