@@ -141,7 +141,7 @@ def check_n_place_orders():
     now = datetime.now()
     curr_min = now.minute
     app = get_app()
-    m_test = test and len(Order.find().run()) <= 2
+    m_test = test and len(Order.find().run()) <= 1
     if test:
         print(f"CURR_MIN: [{curr_min}]\tTEST: {m_test}\n")
 
@@ -174,7 +174,8 @@ def check_n_place_orders():
         print("CHECKING SIGNALS...\n")
 
         for i, row in df.tail(1).iterrows():
-
+            obj = {'ts': row['timestamp'], 'buy_signal' : row['buy_signal'], 'sell_signal': row["sell_signal"], 'sma_20': row['sma_20'], 'sma_50': row['sma_50']}
+            print(f'\n{obj}\n')
             if  is_closed and (
                 row["buy_signal"] == 1 and (row["sma_20"] > row["sma_50"]) or m_test
             ):
