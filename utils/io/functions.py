@@ -34,8 +34,11 @@ def on_backtest(body):
         df = chandelier_exit(heikin_ashi(parse_klines(klines)))
         bal = float(body.get('bal'))
 
-        emit('backtest', 'Backtesting...')
-        data = ce_sma_backtest(df, bal)
+        emit('backtest', 'Backtesting...') 
+        lev = body.get('lev')
+        lev = int(lev) if lev else 1
+
+        data = ce_sma_backtest(df, bal, lev)
         data['profit'] = round(data['balance'] - bal,2)
         data = {**data, 'base': base_ccy[0], 'ccy': base_ccy[1]}
         emit('backtest', {"data": data})

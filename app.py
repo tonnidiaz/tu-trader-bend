@@ -45,7 +45,7 @@ app.config.from_object(Config)
 
 
 socketio = SocketIO(app)
-socketio.init_app(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+socketio.init_app(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
 
 @socketio.on('connect')
 def test_connect(msg):
