@@ -1,3 +1,13 @@
+# Place buy order
+#   Check order status using buy_order_id
+#   If order is not filled: Cannot place sell order
+#   If order is filled: Can place sell order
+# Place sell order
+#   Change Order.side to sell
+#   Add order_Id
+#   Check status
+# If closed: Update Order.status
+
 from datetime import datetime
 from classes.OKX import OKX
 from models.order_model import Order
@@ -11,11 +21,9 @@ def update_order(orders: list[Order]):
         last_order = orders[-1]
         print(f"LAST_ORDER: {last_order}\n")
         is_closed = last_order.is_closed
-        oid = last_order.order_id if last_order.side == 'sell' else last_order.buy_order_id
+        oid = last_order.order_id if len(last_order.order_id)  else last_order.buy_order_id
         res = okx.get_order_by_id(oid)
         
-        if res is None:
-            return None
         _is_closed = res["state"] != "live"
 
         if last_order.side == "sell":
