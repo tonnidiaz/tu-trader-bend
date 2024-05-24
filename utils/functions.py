@@ -9,8 +9,11 @@ import hashlib
 import hmac
 import base64, requests
 from datetime import datetime
+import os
 
-from datetime import datetime
+
+def tu_path(pth: str):
+    return os.path.join(*pth.split("/"))
 
 date_str = "2024-04-28 02:00:00"
 def date_str_to_timestamp(date_str: str):

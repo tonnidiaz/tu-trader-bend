@@ -12,10 +12,6 @@ class Binance:
     def __init__(self) -> None:
         print("INIT BINANCE...")
         self.app = get_app()
-        self.flag = "1" if self.app.demo else "0"  # Production trading:0 , demo trading:1
-        self.api_key = os.getenv("BINANCE_API_KEY")
-        self.api_secret = os.getenv( "BINANCE_API_SECRET")
-        self.client = Client(self.api_key, self.api_secret, testnet=True)
 
     def get_klines(self, symbol = None, start = None, end = None, interval = None, save_fp = None):
         try:
@@ -23,23 +19,25 @@ class Binance:
             klines = []
             symbol = symbol if symbol else self.get_symbol()
             interval = interval if interval else self.app.interval
+            interval = int(interval)
             end = end if end is not None else int(datetime.now().timestamp() * 1000)
-            print(end)
+            parsed_interval = f"{interval}m" if interval < 60 else f"{int(interval/ 60)}h"
+            print(end) 
             if start is not None:
                 first_timestamp = int(start)
                 while first_timestamp <= end:
                     print(f"GETTING {cnt + 1} klines...")
                     print(first_timestamp)
                     print(datetime.fromtimestamp(first_timestamp / 1000))
-                    res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={interval}m&startTime={first_timestamp}")
+                    res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={parsed_interval}&startTime={first_timestamp}")
                     data = res.json()
                     klines = [*klines, *data]
                     if len(data) == 0:
                         break
-                    first_timestamp = round(float(data[-1][0])) + interval * 60 * 1000
+                    first_timestamp = int(float(data[-1][0])) + int(interval) * 60 * 1000
                     cnt += 1
             else:
-                res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={interval}m&endTime={end}")
+                res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={parsed_interval}m&endTime={end}")
                 klines =  res.json()
             
             if save_fp:

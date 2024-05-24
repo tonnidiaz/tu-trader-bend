@@ -19,6 +19,7 @@ from utils.io.io import socketio
 import gunicorn
 from models.order_model import Order
 from models.app_model import App
+from strategies.ce_sma_strategies import strategies as ce_sma_strategies
 
 load_dotenv()
 g = gunicorn
@@ -52,6 +53,7 @@ socketio.init_app(app, cors_allowed_origins="*", logger=False, engineio_logger=F
 @socketio.on('connect')
 def test_connect(msg):
     print(f'Connected: {msg}')
+    return
     if msg:
         uname = msg.get('username')
         user = User.find_one(User.username == uname).run()
@@ -232,8 +234,13 @@ def orders_route():
     orders = list(map(lambda x: json.loads(x.model_dump_json()), orders))
     return orders
 
+@app.get('/strategies')
+def strategies_route():
+    data = list(map(lambda x: vars(x), ce_sma_strategies))
+    return data
+
 scheduler.start()
 #socketio.run(app, allow_unsafe_werkzeug=True)
 if __name__ == '__main__':
-    #socketio.run(app, debug=True, port=5000)
-    pass
+    socketio.run(app, debug=False, port=8000)
+    
