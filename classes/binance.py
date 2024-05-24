@@ -37,12 +37,17 @@ class Binance:
                     first_timestamp = int(float(data[-1][0])) + int(interval) * 60 * 1000
                     cnt += 1
             else:
-                res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={parsed_interval}m&endTime={end}")
+                res = requests.get(f"https://data-api.binance.vision/api/v3/klines?symbol={symbol}&interval={parsed_interval}&endTime={end}")
                 klines =  res.json()
             
             if save_fp:
                 with open(save_fp, 'w') as f:
                     json.dump(klines, f)
+            if type(klines) is not list:
+                
+                print(klines)
+                raise Exception({'msg': "ERROR FETCHING KLINES"})
+
             print(len(klines))
             print("Done fetching klines")
             return klines

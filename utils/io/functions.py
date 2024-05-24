@@ -1,7 +1,8 @@
 import json
+import os
 
 from flask_socketio import emit
-
+import pandas as pd
 from models.user_model import User
 from utils.io.io import socketio
 from classes.binance import Binance
@@ -40,15 +41,26 @@ def on_backtest(body):
             fp = tu_path('data/klines/binance/klines.json')
             with open(fp) as f:
                 klines = json.load(f)
+
         elif offline:
             print("IS OFFLINE")
-            fp = tu_path(f"{klines_dir}/{symbol}_{interval}m")
-            with open(fp) as f:
-                klines = json.load(f)
+            year = start.split('-')[0]
+            df_path = tu_path(f"{dfs_dir}/{year}/{symbol}_{interval}m.csv")
+            print(df_path)
+            if not os.path.exists(df_path):
+                err = {'err': f'DataFrame for {symbol} in {year} at {interval}m does not exist'}
+                emit('backtest', err)
+                return 
+
+            
         else:
             klines = _bin.get_klines(symbol, interval=interval, start=start_ts, end=end_ts, save_fp=fp)
+
         emit('backtest', 'Analizing data...')
-        df = chandelier_exit(heikin_ashi(parse_klines(klines)))
+        df = pd.read_csv(df_path) if offline else chandelier_exit(heikin_ashi(parse_klines(klines)))
+        if offline:
+            df = df[(df['timestamp'] <= end) & (df['timestamp'] >= start)]
+            
         bal = float(body.get('bal'))
 
         emit('backtest', 'Backtesting...') 

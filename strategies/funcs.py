@@ -35,15 +35,15 @@ def strategy(df: pd.DataFrame, balance: float, buy_cond, sell_cond, lev=1, p_gai
             pos = True
             balance *= lev
             entry_price = row['close']
-            tp = entry_price * (1 + p_gain)
+            tp = entry_price * (1 + 10/100)
             lowest_sma = min(row['sma_20'], row['sma_50'])
-            sl = lowest_sma - data.sl_const
+            sl = entry_price * (1 - 3 / 100)#lowest_sma - data.sl_const
             base = balance / entry_price
             base -= base * TAKER_FEE_RATE
             m_data['data'][str(row['timestamp'])] = {'side': 'buy', 'close': round(
                 row['close'], 2), 'balance': round(base, 5)}
 
-        elif pos and sell_cond(row, tp, sl):
+        elif pos and sell_cond(row, entry_price):
             pos = False
             cnt += 1
             exit_price = row['close'] if use_close else (tp if row['high'] >= tp else sl)

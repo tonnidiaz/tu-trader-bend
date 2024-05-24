@@ -19,7 +19,7 @@ from utils.io.io import socketio
 import gunicorn
 from models.order_model import Order
 from models.app_model import App
-from strategies.ce_sma_strategies import strategies as ce_sma_strategies
+from strategies.main import strategies
 
 load_dotenv()
 g = gunicorn
@@ -146,7 +146,7 @@ def place_trade(amt: float | None = None, ts=None, price: float = 0, side="buy")
 TIME_CHECKER_JOB_ID = "TIME_CHECKER_JOB"
 
 last_check_at: datetime | None = None
-test = False
+test = True
 
 
 
@@ -198,17 +198,17 @@ def check_n_place_orders():
             ):
 
                 print(f"HAS BUY SIGNAL > GOING IN: {last_order}")
-                entry_price = row["close"]
                 amt = last_order.ccy_amt * (1 +  last_order.ccy_amt * last_order.profit / 100) if last_order is not None else None
-                place_trade(ts=row["timestamp"], price=entry_price, amt=amt)
+                place_trade(ts=row["timestamp"], amt=amt)
 
-            elif not is_closed and last_order.side == 'sell' and last_order.order_id == '' and (
-                row["sell_signal"] == 1 and (row["sma_20"] < row["sma_50"]) or m_test
-            ):
-
-                print("HAS SELL SIGNAL > GOING OUT")
-                amt = last_order.base_amt
-                place_trade(ts=row["timestamp"], price=row["close"], side="sell", amt=amt)
+            elif not is_closed and last_order.side == 'sell' and last_order.order_id == '':
+                
+                entry = last_order.buy_price
+                if  strategies[app.strategy - 1].sell_cond(row, entry) or m_test:
+                    print("HAS SELL SIGNAL > GOING OUT")
+                    amt = last_order.base_amt
+                    place_trade(ts=row["timestamp"], price=row["close"], side="sell", amt=amt)
+                    
         print("RESUME JOB")
         scheduler.resume_job(TIME_CHECKER_JOB_ID)
 
@@ -236,7 +236,7 @@ def orders_route():
 
 @app.get('/strategies')
 def strategies_route():
-    data = list(map(lambda x: vars(x), ce_sma_strategies))
+    data = list(map(lambda x: vars(x), strategies))
     return data
 
 scheduler.start()

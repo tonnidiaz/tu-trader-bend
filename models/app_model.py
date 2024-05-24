@@ -13,3 +13,4 @@ class App(Document):
     category: str = 'spot'
     mult: float = 1.8
     ce_length: int = 1
+    strategy: int = 5
