@@ -146,7 +146,7 @@ def place_trade(amt: float | None = None, ts=None, price: float = 0, side="buy")
 TIME_CHECKER_JOB_ID = "TIME_CHECKER_JOB"
 
 last_check_at: datetime | None = None
-test = True
+test = False
 
 
 
