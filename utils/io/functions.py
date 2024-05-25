@@ -22,7 +22,7 @@ def on_backtest(body):
         
         _bin: Binance = Binance.inst
         symbol = body.get('symbol')
-        base_ccy = symbol.split(',')
+        base_ccy = symbol
         symbol = "".join(base_ccy)
 
         interval = body.get('interval')
