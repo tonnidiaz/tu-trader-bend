@@ -5,9 +5,9 @@ import os
 
 # ETH -> 2021 -> 2022
 # BTC -> 2022
-symbols = ['BTCUSDT']
-years = [ 2022]
-intervals = [15, 5, 30]
+symbols = ['SOLUSDT']
+years = [ 2021]
+intervals = [15]
 
 
 def main():

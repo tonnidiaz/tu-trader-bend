@@ -15,6 +15,6 @@ class Order(Document):
     sell_timestamp: str = ''
     buy_fee: float = 0
     sell_fee: float = 0
-
+    app_id: str
     def __str__(self):
         return str({'order_id': self.order_id, 'is_closed': self.is_closed, 'side': self.side})

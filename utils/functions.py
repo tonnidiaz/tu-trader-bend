@@ -1,4 +1,5 @@
 import traceback
+from flask_jwt_extended import create_access_token
 import pandas as pd
 import pandas_ta as pta
 import numpy as np
@@ -52,6 +53,11 @@ def err_handler(e: Exception):
     filename, lineno, _, _ = tb[-1]
     # Print filename and line number
     print("Exception occurred in file:", filename, f"line {lineno}")
+
+def tuned_err(code = 500, msg = "Something went wrong"):
+    return f"tuned:{msg}", code
+
+
 
 def chandelier_exit(df : pd.DataFrame, length = 1, mult = 1.8):
 

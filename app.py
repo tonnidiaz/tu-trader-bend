@@ -1,13 +1,18 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
+import os
 from dotenv import load_dotenv
 from flask import Flask, request
+from flask_jwt_extended import JWTManager
+from flask_mail import Mail
 from classes.OKX import OKX
 from classes.binance import Binance
 from models.app_model import App
 from models.user_model import User
 from routes.backtest import router as backtest_bp
 from routes.auth import router as auth_bp
+from routes.otp import router as otp_bp
+
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
 from flask_socketio import SocketIO
@@ -26,9 +31,24 @@ g = gunicorn
 # Init mongo
 TuMongo()
 
+def configure(app: Flask):
+    app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=48)
+
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+    app.config['MAIL_SERVER'] = "smtp.gmail.com"
+    app.config['MAIL_PORT'] = 587
+    app.config['MAIL_USE_TLS'] = True
+    app.config['MAIL_USE_SSL'] = False
+    #app.config['MAIL_DEBUG'] = True
+    app.config['MAIL_USERNAME'] = os.getenv('ADMIN_EMAIL')
+    app.config['MAIL_PASSWORD'] = os.getenv('ADMIN_PASSWORD')
+    app.config['MAIL_DEFAULT_SENDER'] = os.getenv('ADMIN_EMAIL')
+
 def init():
 
     # Create app if not present
+    return
     apps = App.find().run()
     if not len(apps):
         # Creating new app
@@ -42,10 +62,18 @@ app = Flask(__name__)
 
 CORS(app, origins="*")
 
+
+app.register_blueprint(backtest_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(otp_bp)
+
 class Config:
     SCHEDULER_API_ENABLED = True
-app.config.from_object(Config)
 
+app.config.from_object(Config)
+configure(app)
+mail = Mail(app)
+JWTManager(app)
 
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*", logger=False, engineio_logger=False)
@@ -78,9 +106,6 @@ def _on_backtest(data):
 
 scheduler = APScheduler()
 init()
-
-app.register_blueprint(backtest_bp)
-app.register_blueprint(auth_bp)
 
 cnt = 0
 
@@ -239,8 +264,8 @@ def strategies_route():
     data = list(map(lambda x: vars(x), strategies))
     return data
 
-scheduler.start()
-#socketio.run(app, allow_unsafe_werkzeug=True)
+#scheduler.start()
+
 if __name__ == '__main__':
-    socketio.run(app, debug=False, port=8000)
+    socketio.run(app, debug=True, port=8000) #TODO change debug to false
     

@@ -9,6 +9,7 @@ class App(Document):
     sl_const: float = 30
     strict: bool = False
     demo: bool = True
+    is_running: bool = False
     interval:int = 15
     category: str = 'spot'
     mult: float = 1.8
