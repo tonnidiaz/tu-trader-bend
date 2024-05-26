@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import os
 
@@ -44,6 +45,7 @@ def on_backtest(body):
 
         elif offline:
             print("IS OFFLINE")
+            start = start if start is not None else str(datetime.now())
             year = start.split('-')[0]
             df_path = tu_path(f"{dfs_dir}/{year}/{symbol}_{interval}m.csv")
             print(df_path)
@@ -67,8 +69,8 @@ def on_backtest(body):
         lev = body.get('lev')
         lev = int(lev) if lev else 1
         str_num = int(body.get('strategy'))
-        data = ce_sma_strategies[str_num - 1].run(df, bal, lev=lev,p_gain= body.get('pGain'))#ce_sma_backtest(df, bal, lev)
-        data['profit'] = round(data['balance'] - bal,2)
+        data = ce_sma_strategies[str_num - 1].run(df, bal, lev=lev,p_gain= body.get('pGain'), ccy=base_ccy[1])#ce_sma_backtest(df, bal, lev)
+        data['profit'] = round(data['balance'] - bal,2 if base_ccy[1] == "USDT" else 6)
         data = {**data, 'base': base_ccy[0], 'ccy': base_ccy[1]}
         emit('backtest', {"data": data})
         return data 
