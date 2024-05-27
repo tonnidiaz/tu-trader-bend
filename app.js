@@ -40,8 +40,8 @@ app.use(function(err, req, res, next) {
 
 let cnt = 0
 console.log("STARTING...")
-setInterval(()=>{
+/* setInterval(()=>{
     console.log(`Running: ${cnt}`)
     cnt += 1
-}, 1000)
+}, 1000) */
 module.exports = app;
