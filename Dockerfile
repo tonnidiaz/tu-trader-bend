@@ -1,16 +1,17 @@
-# Stage 1
-FROM python:3-slim-buster AS builder
+FROM python:3.11-slim
 
-WORKDIR /flask-app
+# Working directory
+WORKDIR /app
 
-COPY . /flask-app/
+# Copy requirements file and install dependencies
+COPY requirements.txt requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python3 -m venv venv
-ENV VIRTUAL_ENV=/flask-app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Copy the rest of the project files
+COPY . .
 
-RUN pip install -r requirements.txt
-
+# Expose the server port
 EXPOSE 5000
 
-CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]
+# Command to start the server
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
