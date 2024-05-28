@@ -15,7 +15,7 @@ def index():
     return "HELLO WORLD"
 
 cnt = 0
-job_id = "job0"
+job_id = "job"
 
 @scheduler.task("interval", id=job_id, seconds=1, misfire_grace_time=900)
 def job0():
