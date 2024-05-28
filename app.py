@@ -24,6 +24,7 @@ def job0():
     cnt += 1
 print("STARTING SCHEDULER")
 scheduler.start()
+
 if __name__ == "__main__":
     app.run()
 
