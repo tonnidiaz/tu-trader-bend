@@ -55,7 +55,7 @@ def init():
     
     """ apps = App.find().run()
     if not len(apps):
-        # Creating new app
+        # Creating new
         App().save()
     else:
         print(apps[0]) """
@@ -68,7 +68,7 @@ CORS(app, origins="*")
 
 
 app.register_blueprint(backtest_bp)
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_bp) 
 app.register_blueprint(otp_bp)
 app.register_blueprint(bots_bp)
 
