@@ -18,6 +18,7 @@ class OKX:
 
         print("INITIALIZE OKX")
         print(os.getenv("OKX_PASSPHRASE"))
+        return
         self.app = get_app()
         self.flag = "1" if self.app.demo else "0"  # Production trading:0 , demo trading:1
         self.api_key = os.getenv("OKX_API_KEY_DEV" if self.app.demo else "OKX_API_KEY")

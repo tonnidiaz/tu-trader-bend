@@ -12,6 +12,7 @@ from models.user_model import User
 from routes.backtest import router as backtest_bp
 from routes.auth import router as auth_bp
 from routes.otp import router as otp_bp
+from routes.bots import router as bots_bp
 
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
@@ -21,6 +22,7 @@ from utils.functions2 import update_order
 from utils.io.functions import on_backtest
 from utils.mongo import TuMongo
 from utils.io.io import socketio
+from utils.constants import scheduler
 import gunicorn
 from models.order_model import Order
 from models.app_model import App
@@ -48,13 +50,15 @@ def configure(app: Flask):
 def init():
 
     # Create app if not present
-    return
-    apps = App.find().run()
+    if os.environ['ENV'] == "prod":
+        return
+    
+    """ apps = App.find().run()
     if not len(apps):
         # Creating new app
         App().save()
     else:
-        print(apps[0])
+        print(apps[0]) """
     OKX.inst = OKX()
     Binance.inst = Binance()
     
@@ -66,11 +70,12 @@ CORS(app, origins="*")
 app.register_blueprint(backtest_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(otp_bp)
+app.register_blueprint(bots_bp)
 
 class Config:
     SCHEDULER_API_ENABLED = True
-
 app.config.from_object(Config)
+
 configure(app)
 mail = Mail(app)
 JWTManager(app)
@@ -94,7 +99,6 @@ def test_connect(msg):
         print("USER IO ID UPDATED")
         
 
-
 @socketio.on('disconnect')
 def test_disconnect(msg):
     print('Client disconnected: ', msg)
@@ -104,7 +108,8 @@ def _on_backtest(data):
     print('\nON BACKTEST\n')
     on_backtest(data)
 
-scheduler = APScheduler()
+
+
 init()
 
 cnt = 0
@@ -237,14 +242,14 @@ def check_n_place_orders():
         print("RESUME JOB")
         scheduler.resume_job(TIME_CHECKER_JOB_ID)
 
-@scheduler.task("interval", id=TIME_CHECKER_JOB_ID, seconds=1, misfire_grace_time=900)
+""" @scheduler.task("interval", id=TIME_CHECKER_JOB_ID, seconds=1, misfire_grace_time=900)
 def tc_job():
 
     with scheduler.app.app_context():
         global cnt
         check_n_place_orders()
         cnt += 1
-
+ """
 scheduler.app = app
 scheduler.init_app(app)
 
@@ -264,8 +269,8 @@ def strategies_route():
     data = list(map(lambda x: vars(x), strategies))
     return data
 
-#scheduler.start()
+scheduler.start()
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, port=8000) #TODO change debug to false
+    socketio.run( app, debug=False, port=8000) #TODO change debug to false
     

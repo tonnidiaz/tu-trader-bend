@@ -5,8 +5,8 @@ import os
 
 # ETH -> 2021 -> 2022
 # BTC -> 2022
-symbols = ['SOLUSDT']
-years = [ 2021]
+symbols = ['ETHUSDT']
+years = [ 2022]
 intervals = [15]
 
 
@@ -38,8 +38,8 @@ def main():
 
                 klines = _bin.get_klines(symb, start=date_str_to_timestamp(
                     f"{year}-01-01 00:00:00"), end=date_str_to_timestamp(f"{year}-12-31 23:59:00"), interval=interval, save_fp=klines_fp)
-                df = chandelier_exit(heikin_ashi(parse_klines(klines)))
-                df.to_csv(fp)
+                #df = chandelier_exit(heikin_ashi(parse_klines(klines)))
+                #df.to_csv(fp)
                 print(f"DONE interval: {interval}\n")
 
             print(f"DONE SYMB: {symb}\n")

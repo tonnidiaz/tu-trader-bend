@@ -1,5 +1,6 @@
 {
     "scripts": {
-        "dev": "waitress-serve --listen=*8000 app:app"
+        "dev": "waitress-serve --listen=*8000 app:app", 
+        "start": "gunicorn --worker-class eventlet -w 1 app:app --timeout 3600"
     }
 }

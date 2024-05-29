@@ -1,7 +1,10 @@
-from bunnet import Document
+from bunnet import Document, PydanticObjectId
 
 class App(Document):
-    can_trade: bool = True
+    name: str = ""
+    desc: str = ""
+    active: bool = True
+    demo: bool = True
     use_swing_low: bool = True
     base: str = 'ETH'
     ccy: str = 'USDT'
@@ -15,3 +18,5 @@ class App(Document):
     mult: float = 1.8
     ce_length: int = 1
     strategy: int = 5
+    user: PydanticObjectId
+    start_bal: float = 0

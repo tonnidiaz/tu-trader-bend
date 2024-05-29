@@ -1,9 +1,8 @@
 from typing import Optional
-from bunnet import Document, Indexed
-
-from models.app_model import App
+from bunnet import Document, Indexed, PydanticObjectId
 
 class User(Document):
+    username: Indexed(str, unique=True)
     email: Indexed(str, unique=True)
     password: Indexed(str, unique=True)
     io_id: str = ""
@@ -11,4 +10,4 @@ class User(Document):
     otp: Optional[int]
     is_admin: bool = False
     is_verified: bool = False
-    app: list[App] = []
+    apps: list[PydanticObjectId] = []

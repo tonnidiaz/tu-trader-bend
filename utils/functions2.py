@@ -9,6 +9,7 @@
 # If closed: Update Order.status
 
 from datetime import datetime
+import re
 from classes.OKX import OKX
 from models.order_model import Order
 
@@ -59,3 +60,7 @@ def update_order(orders: list[Order]):
         last_order.save()
 
     return is_closed, last_order
+
+def is_email(text):
+    return re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b',
+				 text)
